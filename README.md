@@ -43,21 +43,103 @@ Skill 会在影响内容、视觉、成本或工作量的关键节点向用户�
 
 不需要 Node.js、HyperFrames 或 Remotion。只有在项目需要复杂动态排版、数据可视化或可复用动效模板时，才建议把它们作为可选后期方案。
 
+## 安装
+
+### 安装前准备
+
+确认本机已有 Python 3.9 或更高版本、FFmpeg 和 FFprobe：
+
+```bash
+python3 --version
+ffmpeg -version
+ffprobe -version
+```
+
+macOS 缺少 FFmpeg 时，可以使用 Homebrew 安装：
+
+```bash
+brew install ffmpeg
+```
+
+### 方式一：直接克隆到 Codex Skills 目录（推荐）
+
+以下命令要求目标目录当前不存在：
+
+```bash
+mkdir -p ~/.codex/skills
+git clone --depth 1 git@github.com:itstarts/produce-image-to-video.git \
+  ~/.codex/skills/produce-image-to-video
+```
+
+如果 GitHub 仓库为 Private，需要先为 SSH 配置有权访问该仓库的凭据。
+
+### 方式二：保留开发仓库并建立链接
+
+需要经常更新或参与开发时，可以保留 Git 仓库，再将它链接到 Codex Skills 目录。以下命令要求两个目标路径当前都不存在：
+
+```bash
+mkdir -p ~/Workspace/skills ~/.codex/skills
+git clone git@github.com:itstarts/produce-image-to-video.git \
+  ~/Workspace/skills/produce-image-to-video
+ln -s ~/Workspace/skills/produce-image-to-video \
+  ~/.codex/skills/produce-image-to-video
+```
+
+### 验证安装
+
+运行 Codex 自带的 Skill 校验器：
+
+```bash
+python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
+  ~/.codex/skills/produce-image-to-video
+```
+
+看到 `Skill is valid!` 表示目录结构和 `SKILL.md` 格式有效。安装或更新后请新建一个 Codex 任务，让 Codex 重新加载 Skill 清单。
+
 ## 使用方式
 
-将本目录放入 Codex 可发现的 Skills 目录后，在任务中调用：
+在新的 Codex 任务中调用：
 
 ```text
 $produce-image-to-video
 ```
 
-首次创建视频项目时，也可以直接运行初始化脚本：
+首次创建视频项目时，也可以从仓库或已安装目录直接运行初始化脚本：
 
 ```bash
-python3 scripts/init_project.py /绝对路径/视频项目目录 --title "项目名称"
+python3 ~/.codex/skills/produce-image-to-video/scripts/init_project.py \
+  /绝对路径/视频项目目录 \
+  --title "项目名称"
 ```
 
 脚本会创建通用目录结构和 `video-project.json`，不会覆盖已有项目文件。
+
+## 更新
+
+直接克隆到 Codex Skills 目录时，运行：
+
+```bash
+git -C ~/.codex/skills/produce-image-to-video pull --ff-only
+```
+
+使用“保留开发仓库并建立链接”方式安装时，更新源码仓库：
+
+```bash
+git -C ~/Workspace/skills/produce-image-to-video pull --ff-only
+```
+
+更新完成后同样需要新建 Codex 任务。
+
+## 卸载
+
+使用可恢复方式将已安装目录或符号链接移入废纸篓：
+
+```bash
+mv ~/.codex/skills/produce-image-to-video \
+  ~/.Trash/produce-image-to-video
+```
+
+如果使用源码链接方式，这条命令只会移动符号链接，不会删除 `~/Workspace/skills/produce-image-to-video` 中的 Git 仓库。新建 Codex 任务后，Skill 将不再出现在可用列表中。
 
 ## 项目状态
 
