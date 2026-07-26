@@ -67,11 +67,9 @@ brew install ffmpeg
 
 ```bash
 mkdir -p ~/.codex/skills
-git clone --depth 1 git@github.com:itstarts/produce-image-to-video.git \
+git clone --depth 1 https://github.com/itstarts/produce-image-to-video.git \
   ~/.codex/skills/produce-image-to-video
 ```
-
-如果 GitHub 仓库为 Private，需要先为 SSH 配置有权访问该仓库的凭据。
 
 ### 方式二：保留开发仓库并建立链接
 
@@ -79,7 +77,7 @@ git clone --depth 1 git@github.com:itstarts/produce-image-to-video.git \
 
 ```bash
 mkdir -p ~/Workspace/skills ~/.codex/skills
-git clone git@github.com:itstarts/produce-image-to-video.git \
+git clone https://github.com/itstarts/produce-image-to-video.git \
   ~/Workspace/skills/produce-image-to-video
 ln -s ~/Workspace/skills/produce-image-to-video \
   ~/.codex/skills/produce-image-to-video
