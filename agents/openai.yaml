@@ -1,0 +1,4 @@
+interface:
+  display_name: "图生视频制作"
+  short_description: "用 Image Gen 生图并编排外部图生视频与后期制作"
+  default_prompt: "使用 $produce-image-to-video 创建一个从中文旁白、Image Gen 分镜到外部图生视频和本地成片的项目。"

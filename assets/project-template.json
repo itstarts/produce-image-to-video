@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "project": {
+    "title": "",
+    "language": "zh-CN",
+    "aspect_ratio": "16:9",
+    "width": 1920,
+    "height": 1080,
+    "fps": 24
+  },
+  "intake": {
+    "goal": "",
+    "audience": "",
+    "publishing_platform": "",
+    "target_duration_seconds": null,
+    "tone": "",
+    "status": "draft"
+  },
+  "decisions": {},
+  "narration": {
+    "entry_mode": "script-first",
+    "script_path": "narration/script.txt",
+    "script_status": "draft",
+    "audio_path": "",
+    "audio_duration_seconds": null,
+    "audio_status": "draft"
+  },
+  "style_profile": {
+    "status": "draft",
+    "name": "",
+    "source": "generated",
+    "medium": "",
+    "visual_language": "",
+    "subject_design": "",
+    "shape_language": "",
+    "composition": "",
+    "camera_language": "",
+    "lighting": "",
+    "color_palette": [],
+    "materials": [],
+    "background_system": "",
+    "detail_density": "",
+    "motion_readiness": "",
+    "invariants": [],
+    "avoid": [],
+    "reference_images": []
+  },
+  "video_generation": {
+    "provider": "user-selected",
+    "operation": "manual",
+    "output_mode": "project-default",
+    "output_directory": "inputs/generated-clips",
+    "naming_pattern": "scene-{scene_id}.mp4"
+  },
+  "scenes": [],
+  "delivery": {
+    "output_path": "outputs/final.mp4",
+    "assembled": false,
+    "auto_validated": false,
+    "user_accepted": false
+  }
+}
