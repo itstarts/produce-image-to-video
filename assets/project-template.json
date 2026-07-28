@@ -1,7 +1,8 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "project": {
     "title": "",
+    "slug": "",
     "language": "zh-CN",
     "aspect_ratio": "16:9",
     "width": 1920,
@@ -23,7 +24,8 @@
     "script_status": "draft",
     "audio_path": "",
     "audio_duration_seconds": null,
-    "audio_status": "draft"
+    "audio_status": "draft",
+    "timing_status": "draft"
   },
   "style_profile": {
     "status": "draft",
@@ -45,17 +47,72 @@
     "avoid": [],
     "reference_images": []
   },
-  "video_generation": {
-    "provider": "user-selected",
-    "operation": "manual",
-    "output_mode": "project-default",
-    "output_directory": "inputs/generated-clips",
-    "naming_pattern": "scene-{scene_id}.mp4"
+  "production": {
+    "mode": "undecided",
+    "status": "draft",
+    "external": {
+      "provider": "user-selected",
+      "operation": "manual",
+      "output_directory": "inputs/generated-clips",
+      "naming_pattern": "scene-{scene_id}.mp4"
+    },
+    "hyperframes": {
+      "project_directory": "work/hyperframes",
+      "hyperframes_version": "",
+      "transition": {
+        "type": "crossfade",
+        "duration_seconds": 0.55
+      },
+      "background_color": "#111111",
+      "motion_profile": {
+        "name": "restrained-camera",
+        "default_preset": "auto",
+        "scale_min": 1.02,
+        "scale_max": 1.08,
+        "pan_ratio": 0.025,
+        "internal_transition_duration_seconds": 0.45,
+        "max_static_seconds": 2.5
+      },
+      "status": "draft"
+    }
+  },
+  "captions": {
+    "enabled": true,
+    "word_timing_path": "",
+    "output_json_path": "work/captions/captions.json",
+    "output_srt_path": "work/captions/captions.srt",
+    "status": "draft",
+    "policy": {
+      "single_line": true,
+      "max_glyphs_per_cue": null,
+      "min_glyphs_per_cue": 4,
+      "punctuation": "preserve",
+      "protected_terms": [],
+      "padding_before_seconds": 0.08,
+      "padding_after_seconds": 0.16,
+      "max_alignment_error_ratio": 0.35
+    },
+    "style": {
+      "preset": "clean-bottom",
+      "font_family": "system-ui, sans-serif",
+      "font_file": "",
+      "font_size_px": null,
+      "font_weight": 700,
+      "text_color": "#fffdf7",
+      "stroke_color": "rgba(12, 11, 9, 0.86)",
+      "stroke_width_px": 1.5,
+      "safe_bottom_ratio": 0.083,
+      "safe_side_ratio": 0.045,
+      "background": "none"
+    }
   },
   "scenes": [],
   "delivery": {
     "output_path": "outputs/final.mp4",
     "assembled": false,
+    "composition_checked": false,
+    "preview_accepted": false,
+    "rendered": false,
     "auto_validated": false,
     "user_accepted": false
   }

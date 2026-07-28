@@ -1,5 +1,7 @@
 # 外部图生视频提示词
 
+本文件只适用于 `external_clips`，或 `hybrid` 中标记为 `external_clip` 的场景。静态图片运镜读取 [static-hyperframes.md](static-hyperframes.md)。
+
 ## 平台中立结构
 
 ```text

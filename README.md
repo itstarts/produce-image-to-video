@@ -1,14 +1,16 @@
 # produce-image-to-video
 
-一个通用的 Codex 图生视频制作 Skill。它把中文旁白、视觉风格、Image Gen 分镜、外部图生视频、素材验收、音频同步、字幕与本地合成组织成带确认门禁的完整流程。
+一个通用的 Codex 旁白驱动视觉视频制作 Skill。它把中文旁白、视觉风格、Image Gen 分镜、静态图片 HyperFrames 运镜、外部图生视频、混合合成、字幕与验证组织成带确认门禁的完整流程。
 
 ## 能做什么
 
 - 用中文澄清主题、受众、平台、画幅、时长和语气，并提供带理由的推荐方案。
 - 支持“先写旁白”和“已有音频”两种入口。
 - 使用 Codex 当前任务中的 Image Gen 生成风格样片、主体锚点和分镜图。
-- 为每个镜头生成平台中立的中文图生视频提示词。
-- 允许用户自行选择任意外部图生视频平台，并逐幕保存、检查和返工片段。
+- 支持静态图片加确定性运镜、外部图生视频片段和两者混合三种制作路线。
+- 为需要真实动作的镜头生成平台中立提示词，并允许用户选择任意外部平台逐幕验收。
+- 从词级时间对齐锁定旁白，避免长音频字幕累计漂移。
+- 从项目状态生成无动画库网络依赖的 WAAPI HyperFrames 合成项目。
 - 使用 FFmpeg 统一片段规格、裁切或补帧、拼接视频并合入旁白。
 - 区分自动检查、人工视觉确认、合成完成与最终验收，不把文件存在等同于制作完成。
 
@@ -23,9 +25,9 @@
 → 全部分镜确认
 → 锁定旁白并取得最终音频
 → 按真实音频锁定镜头时序
-→ 用户在外部平台逐幕生成视频
-→ 单幕检查与返工
-→ 拼接、旁白、字幕
+→ 确认静态 HyperFrames、外部片段或混合路线
+→ 逐幕素材检查与返工
+→ 字幕对齐、合成与预览
 → 自动验证与用户最终确认
 ```
 
@@ -33,15 +35,19 @@ Skill 会在影响内容、视觉、成本或工作量的关键节点向用户�
 
 ## 依赖
 
-基础流程需要：
+共同基础需要：
 
 - Python 3.9 或更高版本，仅使用标准库。
 - `ffmpeg` 和 `ffprobe`，用于媒体检查与本地合成。
 - 当前 Codex 任务实际提供的 Image Gen 能力，用于生图。
-- 用户选择的外部图生视频平台，用于把分镜图片生成动态片段。
 - 用户提供或录制的最终旁白音频。
 
-不需要 Node.js、HyperFrames 或 Remotion。只有在项目需要复杂动态排版、数据可视化或可复用动效模板时，才建议把它们作为可选后期方案。
+静态 HyperFrames 或混合路线还需要：
+
+- Node.js 22 或更高版本。
+- 项目明确固定的 HyperFrames CLI 版本；本机未缓存时下载需要用户授权。
+
+外部片段或混合路线中的动态镜头需要用户选择的图生视频平台。纯静态 HyperFrames 路线不依赖外部图生视频。
 
 ## 安装
 
@@ -107,7 +113,8 @@ $produce-image-to-video
 ```bash
 python3 ~/.codex/skills/produce-image-to-video/scripts/init_project.py \
   /绝对路径/视频项目目录 \
-  --title "项目名称"
+  --title "项目名称" \
+  --mode undecided
 ```
 
 脚本会创建通用目录结构和 `video-project.json`，不会覆盖已有项目文件。
@@ -147,7 +154,9 @@ mv ~/.codex/skills/produce-image-to-video \
 - 已确认的创意选择
 - 旁白文字、音频与锁定状态
 - 视觉风格配置
-- 各幕图片、提示词、时长、片段路径与验收状态
+- 静态 HyperFrames、外部片段或混合制作模式
+- 各幕图片、提示词、制作策略、时长、片段路径与验收状态
+- 字幕内容、对齐输入、排版策略与状态
 - 最终输出及自动/人工验收状态
 
 不要跳过状态门禁。图片已生成、图片已确认、视频片段已保存、自动检查通过和用户人工接受是不同状态。
@@ -175,9 +184,34 @@ python3 scripts/validate_media.py /路径/final.mp4 \
 
 唯一帧数量只能排除完全静止的文件，不能代替对抖动、变形、错误动作和画面质量的人工检查。
 
+## 字幕对齐
+
+准备锁定旁白、真实音频时长和受支持的词级时间 JSON 后运行：
+
+```bash
+node scripts/align_captions.mjs /绝对路径/视频项目/video-project.json
+```
+
+脚本使用锁定旁白作为文字源，不对词级时间做全局缩放；标点、每条长度、单行/多行和专有词保护由项目配置决定。
+
+## 静态或混合 HyperFrames 合成
+
+完成图片、外部片段、音频和字幕门禁后运行：
+
+```bash
+python3 scripts/validate_project.py /绝对路径/视频项目/video-project.json \
+  --stage compose \
+  --check-files
+
+node scripts/build_hyperframes_project.mjs \
+  /绝对路径/视频项目/video-project.json
+```
+
+生成器默认拒绝覆盖非空输出目录。需要重建已由生成器创建的项目时，可显式使用 `--replace-generated`；旧目录会移动为编号备份，不会被删除。进入生成目录后，必须运行固定版本的 `npm run check`，完成快照检查和最终预览批准后才能渲染。
+
 ## 合成视频
 
-当全部场景已经通过片段门禁，而且 `video-project.json` 中的镜头时长和旁白音频已经锁定后，运行：
+`assemble_video.py` 仅用于 `external_clips`。当全部外部片段已经通过门禁，而且镜头时长和旁白音频已经锁定后，运行：
 
 ```bash
 python3 scripts/assemble_video.py /绝对路径/视频项目/video-project.json
@@ -191,7 +225,7 @@ python3 scripts/assemble_video.py /绝对路径/视频项目/video-project.json
 4. 检查旁白和镜头总时长差异；
 5. 合入旁白并输出基础成片。
 
-当前基础合成脚本不会自动烧录字幕。Skill 流程会根据锁定旁白和真实停顿生成字幕，再使用 FFmpeg 完成无背景字幕的后期处理。
+静态 HyperFrames 和混合路线使用 `build_hyperframes_project.mjs`，不使用该基础拼接脚本。
 
 ## 目录结构
 
@@ -204,14 +238,20 @@ produce-image-to-video/
 │   └── project-template.json
 ├── references/
 │   ├── decision-protocol.md
+│   ├── captions.md
 │   ├── image-and-style.md
 │   ├── project-state.md
 │   ├── quality-gates.md
+│   ├── static-hyperframes.md
 │   ├── video-prompts.md
 │   └── workflow.md
 └── scripts/
+    ├── align_captions.mjs
     ├── assemble_video.py
+    ├── build_hyperframes_project.mjs
     ├── init_project.py
+    ├── self_test.py
+    ├── validate_project.py
     └── validate_media.py
 ```
 
@@ -219,7 +259,9 @@ produce-image-to-video/
 
 - Image Gen 是否可用以当前任务的实际工具列表为准。
 - 未经用户单独批准，不切换到需要 API Key 或可能计费的生图路径。
-- 外部图生视频由用户手动操作，Skill 不绑定任何单一平台。
+- Skill 不把任何既有视频的题材、人物、色板、字幕标点或镜头数量设为通用默认。
+- 需要真实动作的外部图生视频由用户手动操作，Skill 不绑定任何单一平台。
+- 静态图片路线只生成确定性摄影机运动，不伪造人物口型或肢体动作。
 - 未经授权，不上传或发布成片，不增加音乐、音效或付费服务。
 - 自动验证通过不代表视觉质量已经由用户接受。
 

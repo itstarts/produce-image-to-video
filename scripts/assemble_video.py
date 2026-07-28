@@ -74,6 +74,13 @@ def main() -> int:
     ffprobe = require_binary("ffprobe")
     project_root = project_file.parent
     state = json.loads(project_file.read_text(encoding="utf-8"))
+    if state.get("schema_version") == 2:
+        mode = state.get("production", {}).get("mode")
+        if mode != "external_clips":
+            raise SystemExit(
+                "assemble_video.py 只处理 external_clips；"
+                "static_hyperframes 或 hybrid 请使用 build_hyperframes_project.mjs"
+            )
     settings = state["project"]
     width = int(settings["width"])
     height = int(settings["height"])
